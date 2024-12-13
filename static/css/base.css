@@ -1,0 +1,55 @@
+body {
+    margin: 0;
+    padding: 0;
+    max-width: 100%;
+    background-image: url('../img/background.png');
+    background-size: 100%;
+    overflow-x: hidden;
+}
+
+header {
+    display: flex;
+    justify-content: left;
+    background-color: rgb(26, 25, 25);
+    color: white;
+    height: 11vh;
+    width: 100vw;
+}
+
+header a {
+    text-decoration: none;
+    color: white;
+    display: flex;
+}
+
+header i {
+    font-size: 45pt;
+    margin-top: 2vh;
+    margin-left: 2vw;
+}
+
+header h1 {
+    margin-top: 3.5vh;
+    margin-left: 1vw;
+}
+
+.header-link {
+    margin-top: 4.6vh;
+    margin-left: 5vw;
+    font-size: 16pt;
+}
+
+.header-link:hover {
+    color: rgb(159, 159, 159);
+}
+
+.username {
+    font-size: 16pt;
+    margin-top: 4.6vh;
+    margin-left: 36vw;
+}
+
+.username i {
+    font-size: 20pt;
+    margin-left: 0vw;
+}
