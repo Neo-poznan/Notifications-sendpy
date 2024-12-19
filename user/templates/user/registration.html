@@ -9,6 +9,8 @@
 {% block content %}
     <main>
         <h1>Регистрация</h1>
+        {{ form.errors }}
+        {{ field.errors }}
         <form action="{% url 'user:registration' %}" method="post">
             {% csrf_token %}
             {{ form.username }}

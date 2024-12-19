@@ -1,0 +1,23 @@
+{% extends 'notifications_manager/base.html' %}
+{% load static %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/user_update.css' %}">
+    <title>Личный кабинет</title>
+{% endblock %}
+
+{% block content %}
+    <main>
+        <h1>Личный кабинет</h1>
+        <h3>Поменять адрес электронной почты</h3>
+        {{ form.errors }}
+        {{ field.errors }}
+        <form action="{% url 'user:update' %}" method="post">
+            {% csrf_token %}
+            {{ form.email }}
+            <input type="submit" value="Сохранить" class="button">
+        </form>
+        <a href="{% url 'user:change_password' %}">Поменять пароль</a>
+        
+    </main>
+{% endblock %}
