@@ -59,20 +59,11 @@ class UserUpdateForm(forms.ModelForm):
         'placeholder': 'Email',
         'id': 'email-id'
         }))
-    
-    def is_valid_email(self, email):
-        if not '@gmail.com' in email:
-            return False
-        if not '@yandex.ru' in email:
-            return False
-        return True
         
     def clean_email(self):
         email = self.cleaned_data['email']
         if User.objects.filter(email=email).exists():
-            raise forms.ValidationError('Пользователь с таким email уже существует')
-        if not self.is_valid_email(email):
-            raise forms.ValidationError('Некорректная почта')    
+            raise forms.ValidationError('Пользователь с таким email уже существует')  
         return email
 
     class Meta:
