@@ -39,7 +39,7 @@ def send_contact_list_part_message_and_authentication_data_to_partition(contacts
     for contact in contacts_list_for_one_partition:
         print(contact, partition, message_content)
         data = {'contact': contact, 'message': message_content, 'header': message_header,
-            'sender': sender_email, 'app_password': app_password}
+            'sender': sender_email, 'app_password': app_password, 'server_host': server_host, 'server_port': server_port}
         try:
             producer.produce(TOPIC, value=json.dumps(data), partition=partition, callback=delivery_report)
             producer.flush()
