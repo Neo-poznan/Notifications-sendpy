@@ -12,4 +12,9 @@ def smtp_login_test(email: str, password: str) -> Union[None, Never]:
         server = smtplib.SMTP(host='smtp.yandex.ru', port=587)
     server.starttls()
     server.login(email, password)
+    server.quit()
+
+
+def smtp_server_test(host, port):
+    server = smtplib.SMTP(host=host, port=port)
 

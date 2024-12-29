@@ -8,6 +8,7 @@ urlpatterns = [
     path('set-recipient-list/', views.SetRecipientListView.as_view(), name='set_recipient_list'),
     path('clear-contact-database/', views.clear_contact_database_view, name='clear_contact_database'),
     path('set-app-password/' , views.SetAppPasswordView.as_view(), name='set_app_password'),
+    path('set-mail-server/',views.SetMailServer.as_view(), name='set_mail_server'),
     path('set-message/', views.SetMessageView.as_view(), name='set_message'),
     path('send-message/', views.SendMessageView.as_view(), name='send_message'),
 ]

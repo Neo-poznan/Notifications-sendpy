@@ -22,5 +22,6 @@ urlpatterns = [
     path('', include('notifications_manager.urls', namespace='notifications_manager')),
     path('user/', include('user.urls', namespace='user')),
     path('api/', include('api.urls', namespace='api')),
+    path('user-guide/', include('guide.urls', namespace='guide')),
 ]
 

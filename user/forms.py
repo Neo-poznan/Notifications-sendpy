@@ -24,20 +24,11 @@ class RegistrationForm(UserCreationForm):
         'placeholder': 'Подтвердите пароль',
         'id': 'password2-id'
         }))
-
-    def is_valid_email(self, email):
-        if '@gmail.com' in email:
-            return True
-        if '@yandex.ru' in email:
-            return True
-        return False
-        
+  
     def clean_email(self):
         email = self.cleaned_data['email']
         if User.objects.filter(email=email).exists():
-            raise forms.ValidationError('Пользователь с таким email уже существует')
-        if not self.is_valid_email(email):
-            raise forms.ValidationError('Некорректная почта')    
+            raise forms.ValidationError('Пользователь с таким email уже существует') 
         return email
 
     class Meta:

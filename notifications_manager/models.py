@@ -56,4 +56,21 @@ class Message(models.Model):
         self.objects.filter(user=user).delete()
         self.objects.create(message_layout=message_layout, header=message_header, user=user)
 
+
+class SmtpLoginAndServerData(models.Model):
+    user_id = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True,
+        verbose_name='Пользователь, которому принадлежит строка данных с данными smtp')
+    email = models.EmailField(verbose_name='Электронная почта пользователя. Она дублирует ту, что в модели User')
+    app_password = models.CharField(max_length=50, 
+        verbose_name= 'Пароль приложения с помощью которого будет осуществляться вход на smtp сервер')
+    mail_server_host = models.CharField(max_length=70, blank=True, null=True, verbose_name='Хост smtp сервера')
+    mail_server_port = models.CharField(max_length=5, blank=True, null=True, verbose_name='Порт smtp сервера')
+
+    @classmethod
+    def set_server_data(self, user, server_host, server_port):
+        row = self.objects.get(user_id=user)
+        row.mail_server_host=server_host
+        row.mail_server_port=server_port
+        row.save()
+
     

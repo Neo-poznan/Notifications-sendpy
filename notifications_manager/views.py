@@ -8,10 +8,10 @@ from django.urls import reverse_lazy
 
 from .validators import csv_file_validator, csv_file_content_validator
 from .forms import RecipientsTableForm
-from .models import Recipient_contact, Message
+from .models import Recipient_contact, Message, SmtpLoginAndServerData
 from .kafka import distribute_contact_list_message_and_authentication_data_to_partitions
 from .mixins import AppPasswordRequiredMixin
-from .smtp import smtp_login_test
+from .smtp import smtp_login_test, smtp_server_test
 
 
 class IndexView(TemplateView):
@@ -65,27 +65,49 @@ class SetAppPasswordView(LoginRequiredMixin, TemplateView):
         '''
         Отображение страницы по get запросу
         '''
-        return render(request, self.template_name, {'app_password': self.request.user.app_password})
-    
+        smtp_data_row = SmtpLoginAndServerData.objects.filter(user_id=self.request.user).first()
+        current_app_password = smtp_data_row.app_password if smtp_data_row else None
+        return render(request, self.template_name, {'app_password': current_app_password})
     def post(self, request: request) -> response:
         '''
         Обработка post запроса с формы принимаем пароль проверяем 
         чтобы он совпадал с почтой пользователя и заносим его в базу
         '''
-        app_password_from_form = request.POST['app_password']
+        app_password = request.POST['app_password']
         user = self.request.user
         try:
-            smtp_login_test(user.email, app_password_from_form)
+            smtp_login_test(user.email, app_password)
         except Exception:
             return render(request, self.template_name, {'errors': '''Неверные данные. Почему это могло произойти?
                 При копировании пароля когда он высвечивается там ставятся неправильные пробелы не соответствующие кодировке ascii.
                 Чтобы это исправить уберите пробелы и проставьте их вручную.'''})
         else:
-            user.app_password = app_password_from_form
-            user.save()
-        return render(request, self.template_name, {'app_password': self.request.user.app_password})
+            SmtpLoginAndServerData.objects.create(user_id=user, email=user.email, app_password=app_password)
+            
+        return render(request, self.template_name, {'app_password': app_password})
+    
 
+class SetMailServer(AppPasswordRequiredMixin, View):
+    template_name = 'notifications_manager/set_mail_server.html'
 
+    def get(self, request):
+        smtp_data_row = SmtpLoginAndServerData.objects.get(user_id=self.request.user)
+        current_server_host = smtp_data_row.mail_server_host
+        current_server_port = smtp_data_row.mail_server_port
+        return render(request, self.template_name, {'host': current_server_host, 'port': current_server_port})
+    
+    def post(self, request):
+        server_host = request.POST['server_host']
+        server_port = request.POST['server_port']
+        try:
+            smtp_server_test(server_host, server_port)
+        except:
+            return render(request, self.template_name, context={'message': 'Введите правильные данные сервера'})
+        else:
+            SmtpLoginAndServerData.set_server_data(self.request.user, server_host, server_port)
+            return render(request, self.template_name, {'host': server_host, 'port': server_port})
+        
+        
 class SetMessageView(AppPasswordRequiredMixin, LoginRequiredMixin, TemplateView):
     template_name = 'notifications_manager/set_message.html'
 
@@ -117,15 +139,19 @@ class SendMessageView(AppPasswordRequiredMixin, LoginRequiredMixin, View):
     def get(self, request: request) -> response:
         '''
         Достаем из базы контакты и сообщение проверяем чтобы они были не пустыми
-        и отправляем на рассылку 
+        и отправляем на рассылку если пользователь пропустил этап с указанием настроек сервера, значит 
+        эти поля в json будут иметь пустые значения и воркер будет распознавать это сообщение как то, которое
+        нужно отправлять с личной почты. 
         '''
         recipient_list = Recipient_contact.get_contacts_from_database(request.user)
         message_object = Message.objects.get(user=request.user)
         if recipient_list and message_object:
             message = message_object.message_layout
             header = message_object.header
-            distribute_contact_list_message_and_authentication_data_to_partitions(recipient_list,
-                message, header, request.user.email, request.user.app_password)
+            smtp_data_row = SmtpLoginAndServerData.objects.get(user_id=self.request.user)
+            distribute_contact_list_message_and_authentication_data_to_partitions(contact_list=recipient_list, 
+                message=message, message_header=header, sender_email=smtp_data_row, app_password=smtp_data_row.app_password,
+                server_host=smtp_data_row.mail_server_host, server_port=smtp_data_row.mail_server_port)
             return render(request, 'notifications_manager/success.html')
         return render(request, 'notifications_manager/error_message.html')
 

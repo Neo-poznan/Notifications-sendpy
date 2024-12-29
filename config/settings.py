@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'notifications_manager',
     'user',
     'api',
+    'guide',
 ]
 
 MIDDLEWARE = [
@@ -97,7 +98,6 @@ DATABASES = {
         'PORT': '5432',
     }
 }
-
 
 LOGGING = {
     'version': 1,

@@ -20,7 +20,9 @@ def delivery_report(err, msg):
 
 
 def send_contact_list_part_message_and_authentication_data_to_partition(contacts_list_for_one_partition: list[str],
-        partition: int, message_content: str, message_header: str, sender_email: str, app_password: str) -> None:
+        partition: int, message_content: str, message_header: str, sender_email: str, app_password: str, 
+        server_host: str, server_port: str
+    ) -> None:
     '''
     Отправка списка контактов, сообщения и данных аутентификации 
     в определенную партицию. Создаем Producer
@@ -46,7 +48,9 @@ def send_contact_list_part_message_and_authentication_data_to_partition(contacts
 
 
 def distribute_contact_list_message_and_authentication_data_to_partitions(contacts_list: list[str], 
-        message: str, message_header: str, sender_email: str, app_password: str) -> None:
+        message: str, message_header: str, sender_email: str, app_password: str,
+        server_host: str, server_port: str
+    ) -> None:
     '''
     Разделяем список контактов на количество частей равное количеству партиций 
     и отправляем каждую часть в отдельном потоке чтобы ускорить отправку так как это IO-bound операция
@@ -54,6 +58,6 @@ def distribute_contact_list_message_and_authentication_data_to_partitions(contac
     contacts_lists = [list(part) for part in divide(len(PARTITIONS), contacts_list)]
     for partition, contacts_list_part in zip(PARTITIONS, contacts_lists):
         thread = threading.Thread(target=send_contact_list_part_message_and_authentication_data_to_partition, 
-            args=(contacts_list_part, partition, message, message_header, sender_email, app_password))
+            args=(contacts_list_part, partition, message, message_header, sender_email, app_password, server_host, server_port))
         thread.start()
 
