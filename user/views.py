@@ -4,6 +4,8 @@ from django.views.generic import CreateView, UpdateView
 from django.urls import reverse_lazy
 
 from .forms import RegistrationForm, LoginForm, UserUpdateForm, UserPasswordChangeForm
+from .models import User
+from notifications_manager.models import SmtpLoginAndServerData
 
 
 class RegistrationVIew(CreateView):
@@ -31,8 +33,25 @@ class UserUpdateView(UpdateView):
     form_class = UserUpdateForm
     success_url = reverse_lazy('user:update')
 
-    def get_object(self) -> Model:
+    def get_object(self) -> User:
+        '''
+        Перепишем метод get_object. По умолчанию этот метод возвращает 
+        объект по id переданному в url, но нам нужен объект текущего пользователя
+        '''
         return self.request.user
+    
+    def form_valid(self, form):
+        '''
+        Переопределим метод form_valid, чтобы в базу заносились изменения
+        модели данных сервера, так как поле электронной почты в ней дублирует поле 
+        в модели в конце вызываем метод родительского класса чтобы обновить поле
+        в модели пользователя
+        '''
+        user = self.get_object()
+        smtp_data_object = SmtpLoginAndServerData.objects.get(user_id=user)
+        smtp_data_object.email = form.cleaned_data['email']
+        smtp_data_object.save()
+        return super().form_valid(form)
     
 
 class UserPasswordChangeView(PasswordChangeView):

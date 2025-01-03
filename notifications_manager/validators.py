@@ -1,4 +1,5 @@
 import csv
+import re
 from typing import Never
 
 from django.core.exceptions import ValidationError
@@ -25,9 +26,8 @@ def csv_file_content_validator(file: bytes) -> Never:
     csv_reader = csv.reader(file_data)
     for row in csv_reader:
         if len(row) != 1:
-            raise ValidationError('Required 1 column')
-        
-        for row in csv_reader:
-            if '@gmail.com' not in row[0] and '@yandex.ru' not in row[0] and '@mail.ru' not in row[0]:
-                raise ValidationError('Invalid email format')
+            raise ValidationError('Required 1 column')       
+    for row in csv_reader:
+        if not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', row[0]):
+            raise ValidationError('Invalid email format')
             

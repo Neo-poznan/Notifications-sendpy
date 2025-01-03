@@ -68,6 +68,9 @@ class SmtpLoginAndServerData(models.Model):
 
     @classmethod
     def set_server_data(self, user, server_host, server_port):
+        '''
+        Заносим данные сервера в базу
+        '''
         row = self.objects.get(user_id=user)
         row.mail_server_host=server_host
         row.mail_server_port=server_port

@@ -91,12 +91,20 @@ class SetMailServer(AppPasswordRequiredMixin, View):
     template_name = 'notifications_manager/set_mail_server.html'
 
     def get(self, request):
-        smtp_data_row = SmtpLoginAndServerData.objects.get(user_id=self.request.user)
-        current_server_host = smtp_data_row.mail_server_host
-        current_server_port = smtp_data_row.mail_server_port
+        '''
+        Отображение страницы по get запросу
+        '''
+        smtp_data_object = SmtpLoginAndServerData.objects.get(user_id=self.request.user)
+        current_server_host = smtp_data_object.mail_server_host
+        current_server_port = smtp_data_object.mail_server_port
         return render(request, self.template_name, {'host': current_server_host, 'port': current_server_port})
     
     def post(self, request):
+        '''
+        Обработка post запроса с формы принимаем данные о сервере
+        проверяем их с помощью авторизации на сервере
+        заносим данные в базу
+        '''
         server_host = request.POST['server_host']
         server_port = request.POST['server_port']
         try:
