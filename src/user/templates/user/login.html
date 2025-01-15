@@ -1,0 +1,22 @@
+{% extends 'notifications_manager/base.html' %}
+{% load static %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    <title>Аутентификация</title>
+{% endblock %}
+
+{% block content %}
+    <main>
+        <h1>Аутентификация</h1>
+        {{ form.errors }}
+        {{ field.errors }}
+        <form action="{% url 'user:login' %}" method="post">
+            {% csrf_token %}
+            {{ form.username }}
+            {{ form.password }}
+            <input type="submit" value="Войти в аккаунт" class="button">
+        </form>
+        
+    </main>
+{% endblock %}

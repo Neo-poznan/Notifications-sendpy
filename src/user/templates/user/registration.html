@@ -1,0 +1,24 @@
+{% extends 'notifications_manager/base.html' %}
+{% load static %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/registration.css' %}">
+    <title>Регистрация</title>
+{% endblock %}
+
+{% block content %}
+    <main>
+        <h1>Регистрация</h1>
+        {{ form.errors }}
+        {{ field.errors }}
+        <form action="{% url 'user:registration' %}" method="post">
+            {% csrf_token %}
+            {{ form.username }}
+            {{ form.email }}
+            {{ form.password1 }}
+            {{ form.password2 }}
+            <input type="submit" value="Зарегистрироваться" class="button">
+        </form>
+        
+    </main>
+{% endblock %}

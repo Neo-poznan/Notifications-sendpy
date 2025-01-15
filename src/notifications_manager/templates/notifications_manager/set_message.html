@@ -1,0 +1,43 @@
+{% extends "notifications_manager/base.html" %}
+{% load static %}
+
+{% block css %}
+<title>Notifications-sendpy</title>
+<link rel="stylesheet" href="{% static 'css/set_message.css' %}">
+{% endblock %}
+
+{% block content %}
+<div id="container">
+<main>
+    <div class="errors">{{ errors }}</div>
+    <br>
+    <form action="{% url 'notifications_manager:set_message' %}" method="post">
+        {% csrf_token %}
+        {% if message_subject %}
+        <input type="text" name="message_subject" id="message-header-input" placeholder="Заголовок сообщения" maxlength="150" value="{{ message_header }}">
+        {% else %}
+        <input type="text" name="message_subject" id="message-header-input" placeholder="Заголовок сообщения" maxlength="150">
+        {% endif %}
+
+        <br>
+        <textarea name="message" id="message-layout-input" minlength="70" placeholder="Поместите сюда верстку сообщения...">{% if message %}{{ message }}{% endif %}</textarea>
+        <br>
+        <div class="button-container">
+        <button class="button" type="submit">Сохранить</button>>
+        <div class="button"><a href="{% url 'notifications_manager:send_message' %}">Отправить сообщение</a></div>
+        </div>
+    </form>
+
+</main>
+<div id="preview"></div>
+</div>
+
+<script>
+    textarea = document.getElementById('message-layout-input');
+    preview = document.getElementById('preview');
+    textarea.addEventListener('keyup', function() {
+        preview.innerHTML = textarea.value
+    })
+</script>
+
+{% endblock %} 

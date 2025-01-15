@@ -1,0 +1,11 @@
+main {
+    padding: 20px;
+    background-color: white;
+    border: 5px solid rgb(241, 214, 166);
+    width: 52vw;
+    margin-top: 2vh;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 10px;
+
+}

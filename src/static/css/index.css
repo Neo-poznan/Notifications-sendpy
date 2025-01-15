@@ -1,0 +1,25 @@
+main {
+    width: 52vw;
+    margin: auto;
+    background-color: white;
+    border: 6px solid rgb(202, 197, 197);
+    border-radius: 15px;
+    padding: 38px;
+    margin-top: 2vh;
+}
+
+img {
+    width: 53vw;
+    margin-top: 40px;
+}
+
+.user-guide {
+    margin-top: 40px;
+    padding: 36px;
+    background-color: rgb(250, 242, 233);
+    border: 6px solid rgb(233, 224, 202);
+    border-radius: 15px;
+    width: 21vw;
+    font-size: 20pt;
+}
+

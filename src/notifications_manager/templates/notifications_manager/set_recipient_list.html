@@ -1,0 +1,42 @@
+{% extends "notifications_manager/base.html" %}
+{% load static %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/set_recipient_list.css' %}">
+    <title>Notifications-sendpy</title>
+{% endblock %}
+
+{% block content %}
+    <div id="container">     
+        <main>
+            <form action="" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <p>{{ errors }}</p>
+                {{ form.table_file }}
+                <br>
+                <button class="button" type="submit" accept=".csv">Отправить</button>
+                <br>
+                <div class="button">
+                <a href="{% url 'notifications_manager:set_smtp_password' %}">К следующему этапу</a>
+                </div>
+                <br>
+                <div class="button">
+                <a href="{% url 'notifications_manager:clear_contact_database' %}">Очистить список контактов</a>
+                </div>
+            </form>       
+        </main>
+        <div id="sidebar">
+            <div class="recipient-list">
+                {% if not recipient_list %}
+                    Список рассылки пуст
+                {% endif %}
+                {% for recipient in recipient_list %}
+                    <p>{{ recipient }}</p>
+                {% endfor %}   
+            
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}

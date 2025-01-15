@@ -1,0 +1,35 @@
+{% extends 'notifications_manager/base.html' %}
+{% load static %}
+
+{% block css %}
+<title>Настройка почтового сервера</title>
+<link rel="stylesheet" href="{% static 'css/guide.css' %}">
+{% endblock %}
+
+{% block content %}
+<main>
+    <h1>Что указывать в поле "хост"?</h1>
+    <p>Нужно указать ваш домен, который вы указывали когда настраивали ваш почтовый сервер.
+         Найти его можно(на примере postfix) в конфиге /etc/postfix/main.cf строчка myhostname.</p>
+    <h1>Что указать в поле "порт"?</h1>
+    <p>Нужно указать порт сервера открытый для smtp подключения. 
+        Откройте файл конфигурации Postfix: /etc/postfix/master.cf
+        Найдите строку, которая начинается с submission (порт 587). 
+        Если она закомментирована, раскомментируйте её и убедитесь, что она выглядит так
+        <br>
+        submission inet n       -       y       -       -       smtpd
+        <br>
+            -o syslog_name=postfix/submission
+        <br>
+            -o smtpd_tls_security_level=encrypt
+        <br>
+            -o smtpd_sasl_auth_enable=yes
+        <br>
+            -o smtpd_client_restrictions=permit_sasl_authenticated,reject
+        <br>
+            -o milter_macro_daemon_name=ORIGINATING
+        <br>
+        Этот порт (587) и нужно указать на сайте
+    </p>
+</main>
+{% endblock %}

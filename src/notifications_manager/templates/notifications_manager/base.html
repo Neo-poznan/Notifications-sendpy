@@ -1,0 +1,33 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    {% block css %}
+    {% endblock %}
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css"rel="stylesheet">
+</head>
+<body>
+   
+        <header>
+            <a href="{% url 'notifications_manager:index' %}">
+            <i class="ri-mail-send-line"></i>
+            <h1>Notifications-sendpy</h1>
+            {% if request.user.is_authenticated %}
+            <a class="header-link" href="{% url 'notifications_manager:set_recipient_list' %}">Создать рассылку/продолжить создание</a>
+            <a class="header-link" href="{% url 'user:logout' %}">Выйти</a>
+            <a href="{% url 'user:update' %}"><p class="username">{{ request.user.username }}<i class="ri-user-3-line"></i></p></a>
+            {% else %}
+            <a class="header-link" href="{% url 'user:login' %}">Вход</a>
+            <a class="header-link" href="{% url 'user:registration' %}">Регистрация</a>
+            {% endif %}
+            </a>
+
+        </header>
+        {% block content %}
+
+        {% endblock %}
+</body>
+</html>

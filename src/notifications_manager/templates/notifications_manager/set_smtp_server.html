@@ -1,0 +1,38 @@
+{% extends 'notifications_manager/base.html' %}
+{% load static %}
+
+{% block css %}
+<title>Notifications-sendpy</title>
+<link rel="stylesheet" href="{% static 'css/set_smtp_password.css' %}">
+{% endblock %}
+
+{% block content %}
+<main style="
+    height: auto;
+    ">
+    <h1>Настройки вашего почтового сервера</h1>
+    <p>Порт обязательно должен быть открыт на вашем почтовом сервере.
+    Если вы используете корпоративную почту yandex 360 то указывайте хост smtp.yandex.ru и порт 587.
+    Подробнее про smtp тут <a href="{% url 'guide:smtp' %}">guide:smtp</a>
+    </p>
+    {{ message }}
+    <form action="{% url 'notifications_manager:set_mail_server' %}" method="post">
+        {% csrf_token %}
+        <input name="server_host" type="text" placeholder="Хост вашего почтового сервера" value="{{ host }}">
+        <input name="server_port" type="text" placeholder="Порт вашего почтового сервера" value="{{ port }}">
+
+        <div class="button-container">
+         <button class="button-submit" type="submit">  
+            <div class="button">
+                <p>Сохранить</p>
+            </div>
+        </button>
+        <a class="next-button" href="{% url 'notifications_manager:set_message' %}">
+            <div class="button">
+                <p>Далее</p>
+            </div>
+        </a>
+        </div>
+    </form>
+</main>
+{% endblock %}
