@@ -5,16 +5,20 @@ from django.core.exceptions import ValidationError
 
 from user.models import User
 from .validators import csv_file_validator, csv_file_content_validator
-from .repository import RecipientContactsRepository, SmtpCredentialsRepository, SmtpConnectionRepository, MessageRepository, send_contact_list_part_message_and_authentication_data_to_partition
+from .repository import send_contact_list_part_message_and_authentication_data_to_partition
 from .helpers import distribute_contact_list_to_partitions
 from config.settings import PARTITIONS
 
 
 class NotificationsManagerUseCase:
-    def __init__(self):
-        self._recipient_contact_repository = RecipientContactsRepository()
-        self._smtp_credentials_repository = SmtpCredentialsRepository()
-        self._message_repository = MessageRepository()
+    def __init__(self, recipient_contact_repository,
+                smtp_credentials_repository, message_repository,
+                smtp_connection_repository,
+                ):
+        self._recipient_contact_repository = recipient_contact_repository
+        self._smtp_credentials_repository = smtp_credentials_repository
+        self._message_repository = message_repository
+        self._smtp_connection_repository = smtp_connection_repository
 
     def set_recipient_contacts(self, contacts_file: bytes, user: User) -> str:
         try:
@@ -28,7 +32,7 @@ class NotificationsManagerUseCase:
 
     def set_smtp_credentials(self, user: User, smtp_server_host: str, smtp_server_port: str) -> str:
         try:
-            smtp_connection = SmtpConnectionRepository(smtp_server_host, smtp_server_port)
+            smtp_connection = self._smtp_connection_repository(smtp_server_host, smtp_server_port)
             smtp_connection.smtp_login_test(user.email, self._smtp_credentials_repository.get_user_smtp_password(user))
         except Exception as error:
             return 'Настройки SMTP не были сохранены. Проверьте введенные данные вашего почтового сервера и smtp пароля'

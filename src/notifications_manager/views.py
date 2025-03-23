@@ -7,7 +7,7 @@ from django.urls import reverse_lazy
 
 from .forms import RecipientsTableForm
 from .mixins import SmtpPasswordRequiredMixin, MessageRequiredMixin
-from .repository import RecipientContactsRepository, SmtpCredentialsRepository, MessageRepository
+from .repository import RecipientContactsRepository, SmtpCredentialsRepository, MessageRepository, SmtpConnectionRepository
 from .use_case import NotificationsManagerUseCase
 
 
@@ -30,7 +30,12 @@ class SetRecipientListView(LoginRequiredMixin, View):
         Обработка post запроса с формы принимаем файл - список рассылки
         файл проходит валидацию и мы добавляем контакты в базу
         '''
-        use_case = NotificationsManagerUseCase()
+        use_case = NotificationsManagerUseCase(
+            recipient_contact_repository=RecipientContactsRepository(),
+            smtp_credentials_repository=SmtpCredentialsRepository(),
+            message_repository=MessageRepository(),
+            smtp_connection_repository=SmtpConnectionRepository()
+        )
         csv_file = request.FILES['table_file'].read()
         status = use_case.set_recipient_contacts(csv_file, self.request.user)
         context = {'form': RecipientsTableForm, 'recipient_list': RecipientContactsRepository().get_user_contacts(self.request.user), 
@@ -88,7 +93,13 @@ class SetSmtpCredentialsView(SmtpPasswordRequiredMixin,LoginRequiredMixin, View)
         '''
         server_host = request.POST['server_host']
         server_port = request.POST['server_port']
-        status = NotificationsManagerUseCase().set_smtp_credentials(self.request.user, server_host, server_port)
+        use_case = NotificationsManagerUseCase(
+            recipient_contact_repository=RecipientContactsRepository(),
+            smtp_credentials_repository=SmtpCredentialsRepository(),
+            message_repository=MessageRepository(),
+            smtp_connection_repository=SmtpConnectionRepository()
+        )
+        status = use_case.set_smtp_credentials(self.request.user, server_host, server_port)
         return render(request, self.template_name, {'host': server_host, 'port': server_port, 'errors': status})
          
         
@@ -130,6 +141,12 @@ class SendMessageView(MessageRequiredMixin, SmtpPasswordRequiredMixin, LoginRequ
         эти поля в json будут иметь пустые значения и воркер будет распознавать это сообщение как то, которое
         нужно отправлять с личной почты. 
         '''
-        NotificationsManagerUseCase().send_notifications(user=self.request.user)
+        use_case = NotificationsManagerUseCase(
+            recipient_contact_repository=RecipientContactsRepository(),
+            smtp_credentials_repository=SmtpCredentialsRepository(),
+            message_repository=MessageRepository(),
+            smtp_connection_repository=SmtpConnectionRepository()
+        )
+        use_case.send_notifications(user=self.request.user)
         return render(request, self.template_name)
     

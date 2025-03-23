@@ -7,6 +7,7 @@ main {
     border-radius: 15px;
     margin: auto;
     margin-top: 21vh;
+    text-align: center;
 }
 
 main h1 {
@@ -20,9 +21,15 @@ main h1 {
     margin: 10px;
 }
 
+.button-container {
+    width: 24vw;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: right;
+}
+
 .button {
-    width: 10vw;
-    height: 3vh;
+    width: 150px;
+    height: 35px;
     border-radius: 6px;
-    margin-left: 15vw;
 }

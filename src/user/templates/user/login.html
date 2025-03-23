@@ -15,7 +15,9 @@
             {% csrf_token %}
             {{ form.username }}
             {{ form.password }}
-            <input type="submit" value="Войти в аккаунт" class="button">
+            <div class="button-container">
+                <input type="submit" value="Войти в аккаунт" class="button">
+            </div>
         </form>
         
     </main>
